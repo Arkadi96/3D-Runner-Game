@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -44,11 +45,21 @@ public class RoadSpawner : MonoBehaviour
     {
         float z = GetRoadPos();
         GameObject oldRoad = roadQueue.Dequeue();
-        var newRoad = Instantiate(oldRoad, new Vector3(0,0,zPos), Quaternion.identity);
+        var newRoad = Instantiate(oldRoad, new Vector3(0, 0, zPos), Quaternion.identity);
         newRoad.transform.parent = roadParentTransform;
-        Destroy(oldRoad);
-        roadQueue.Enqueue(newRoad);        
+        StartCoroutine(DestroyOld(oldRoad));
+        roadQueue.Enqueue(newRoad);
     }
+
+    private IEnumerator DestroyOld(GameObject old)
+    {
+        if (old != null)
+        {
+            yield return new WaitForSeconds(1);
+            Destroy(old);
+        }        
+    }
+    
 
     private float GetRoadPos()
     {
